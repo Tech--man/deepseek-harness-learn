@@ -1,0 +1,4 @@
+# 工具缓存与会话遗留
+.mimosa/
+.DS_Store
+*.log
