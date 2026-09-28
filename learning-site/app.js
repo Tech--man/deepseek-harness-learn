@@ -338,6 +338,7 @@
 
     main.innerHTML = html;
     buildSidebar(id);
+    paintSbScroll();
     window.scrollTo(0, 0);
 
     // 锚点直达：path 步骤（#/path#m3）与版本记录（#/changelog/e-…）
@@ -415,20 +416,40 @@
     var hidden = sbPref.collapsed || (sbAutoHidden && !isMobile());
     return (sbPref.side === "left") === hidden ? "›" : "‹";
   }
+  function sbHidden() { return !isMobile() && (sbPref.collapsed || sbAutoHidden); }
   function sbPaint() {
     shellEl.setAttribute("data-side", sbPref.side);
-    shellEl.classList.toggle("sb-collapsed",
-      !isMobile() && (sbPref.collapsed || sbAutoHidden));
+    shellEl.classList.toggle("sb-collapsed", sbHidden());
     var chev = sbChevron();
     var t = document.getElementById("sideToggle");
     if (t) { t.textContent = chev; t.title = sbPref.collapsed ? "展开侧栏" : "收起侧栏"; }
     var tab = document.getElementById("sidebarTab");
     if (tab) tab.textContent = chev;
+    paintSbScroll();
   }
   function sbSetCollapsed(v) {
     sbPref.collapsed = !!v; sbAutoHidden = false; sbPersist(); sbPaint();
   }
   function sbSetSide(s) { sbPref.side = s; sbPersist(); sbPaint(); paintTopbar(); }
+
+  /* ---------- 侧栏滚动定位条（12px 细长胶囊，原生滚动条隐藏） ---------- */
+  var sidebarEl = document.getElementById("sidebar");
+  var sbScrollBarEl = document.getElementById("sbScrollBar");
+  function paintSbScroll() {
+    if (!sbScrollBarEl || !sidebarEl) return;
+    var scrollable = sidebarEl.scrollHeight - sidebarEl.clientHeight > 4;
+    if (isMobile() || sbHidden() || !scrollable) {
+      sbScrollBarEl.style.display = "none";
+      return;
+    }
+    var max = sidebarEl.scrollHeight - sidebarEl.clientHeight;
+    var ratio = Math.min(1, Math.max(0, sidebarEl.scrollTop / (max || 1)));
+    var topbarH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-h")) || 72;
+    var trackTop = topbarH + 8 + 12; // 卡片顶缝 + 内边距
+    var trackH = sidebarEl.clientHeight - 24;
+    sbScrollBarEl.style.display = "block";
+    sbScrollBarEl.style.top = (trackTop + ratio * Math.max(0, trackH - 12)) + "px";
+  }
 
   /* ---------- 顶栏滚动玻璃态 + 侧栏自动收起 ---------- */
   var topbar = document.querySelector(".topbar");
@@ -481,13 +502,21 @@
       if (!dragging) return;
       dragging = false;
       rz.classList.remove("dragging");
+      shellEl.classList.remove("sb-resize-hint");
       document.body.classList.remove("resizing");
       try { rz.releasePointerCapture(e.pointerId); } catch (err) {}
       try { localStorage.setItem(SB_W_KEY, String(Math.round(curW()))); } catch (err) {}
     }
+    rz.addEventListener("pointerenter", function () {
+      shellEl.classList.add("sb-resize-hint");
+    });
+    rz.addEventListener("pointerleave", function () {
+      if (!dragging) shellEl.classList.remove("sb-resize-hint");
+    });
     rz.addEventListener("pointerdown", function (e) {
       dragging = true; startX = e.clientX; startW = curW();
       rz.classList.add("dragging");
+      shellEl.classList.add("sb-resize-hint");
       document.body.classList.add("resizing");
       try { rz.setPointerCapture(e.pointerId); } catch (err) {}
       e.preventDefault();
@@ -521,6 +550,8 @@
     if (sbPref.collapsed) sbSetCollapsed(false);
     else { sbAutoHidden = false; sbPaint(); }
   });
+  if (sidebarEl) sidebarEl.addEventListener("scroll", paintSbScroll, { passive: true });
+  window.addEventListener("resize", paintSbScroll);
   sbPaint();
 
   paintProgress();
