@@ -2,10 +2,10 @@
   "repo": "/Users/x.ray/Developer/projects/web-frontend/deepseek-harness",
   "remote": "https://github.com/deepseek-ai/deepseek-harness.git",
   "branch": "master",
-  "commit": "21638c56315ae6a2b552d6091945d3144c9af32e",
-  "date": "2026-09-27",
-  "tag": "dsh-v0.1.7-rc.2",
+  "commit": "4878cdabd87d4041bdaff61d04c966883b9fd07a",
+  "date": "2026-09-28",
+  "tag": "dsh-v0.2.0-rc.1",
   "kb_kps": 34,
-  "last_checked": "2026-09-28",
+  "last_checked": "2026-09-29",
   "notes": "知识库锚定快照；跟踪任务以此文件为增量基线。更新后由任务改写 commit/date/tag/kb_kps/last_checked。"
 }

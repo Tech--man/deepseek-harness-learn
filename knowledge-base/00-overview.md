@@ -48,5 +48,5 @@ Harness 要回答的五个骨架问题，也是本知识库的主线：
 - YAML（patch 文件）、JSON-RPC（SDK 层）。
 
 ## 版本锚点
-- 源码快照：`origin/master @ 21638c56`（2026-09-27，dsh 0.1.7-rc.2）
+- 源码快照：`origin/master @ 4878cdab`（2026-09-28，dsh 0.2.0-rc.1）
 - 官方文档：[deepseek-harness.github.io/deepseek-harness](https://deepseek-harness.github.io/deepseek-harness/)；仓库内 `docs/` 与本知识库互为补充（`docs/architecture.md` 是官方权威图）。

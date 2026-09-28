@@ -158,7 +158,7 @@
       "<ul><li><b>一个工业级 Agent Harness 的完整解剖样本</b>：turn/step 状态机、追加式会话日志、能力接缝（seam）、作用域（scope）——这些是所有 Agent 框架共有的骨架问题，dsh 给出了一组极完整的公开答案。</li>" +
       "<li><b>“一切皆插件”的极限工程</b>：没有特权内核，模型适配、工具、循环自身都可从配置替换；补丁（patch）层叠而非改源码。</li>" +
       "<li><b>可以直接上手扩展</b>：读完就能写自己的 tool / LLM adapter / 会话投影 / 命令插件。</li></ul>" +
-      '<div class="callout tip"><div class="t">◆ 版本与范围</div><p>本知识库基于 <code>origin/master @ 21638c56</code>（2026-09-27，dsh 0.1.7-rc.2），由每日跟踪任务随上游更新（见「版本追踪」页）。项目处于 developer preview，API 可能快速变化；每个知识点页脚标注了对应源码路径，改动后请对照仓库。</p></div>';
+      '<div class="callout tip"><div class="t">◆ 版本与范围</div><p>本知识库基于 <code>origin/master @ 4878cdab</code>（2026-09-28，dsh 0.2.0-rc.1），由每日跟踪任务随上游更新（见「版本追踪」页）。项目处于 developer preview，API 可能快速变化；每个知识点页脚标注了对应源码路径，改动后请对照仓库。</p></div>';
     return html;
   }
   function statRow() {

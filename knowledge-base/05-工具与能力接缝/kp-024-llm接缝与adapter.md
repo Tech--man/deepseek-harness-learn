@@ -48,7 +48,7 @@ kp-013（PreparedLlmCall）、kp-023（seam）。
 
 **DeepSeek wire extensions**（docs/deepseek-llm-api-wire-extensions.md）：
 - HTTP 头：`x-deepseek-harness-user-id / -session-id`、`x-deepseek-harness-compact: 1`（压缩请求标记）；
-- 请求体顶层 `dsh_plugin_packages`（激活包清单）与 `dsh_session_log`（会话日志连续后缀 + 水位 + 2xx 后追加 delivery-accepted 事件，maxBytes 默认 8MiB）；
+- 请求体顶层 `dsh_plugin_packages`（激活包清单）与 `dsh_session_log`（会话日志连续后缀 + 水位 + 2xx 后追加 delivery-accepted 事件，maxBytes 默认 8MiB）；`dsh_session_log` 的 `enabled` 是 **Volatile 配置**（自 2026-09-28 起）——每个请求重新读开关，运行中切换无需重注册插件；
 - 扩展接缝 `ctx.deepseekLlmApiExtensions`：provider 注册唯一字段，`prepare(request)→{value, accept?()}`；**事务**：先序列化 base body → 合并（撞名抛 `REQUEST_EXTENSION`）→ **HTTP 2xx 后才 accept()** 提交付货状态——重复投递永远优于缺口；
 - reasoning 回写：历史里的 reasoning 块序列化为 `{type:'thinking', thinking, signature?}`；`purpose:'session-title'` 强制关思考（serialize.ts:146）。
 
