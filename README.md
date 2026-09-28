@@ -73,6 +73,14 @@ node tools/build-site.mjs
 - 跟踪范围：`origin/master` 与 `dsh-v*` 发布 tag；`dev` 等中间分支不在跟踪面内。
 - `09-版本追踪.md` 尾部「格式约定」锁定了记录格式与解析器契约，追加记录时勿破坏结构。
 
+## 部署（GitHub Pages · 自动发布）
+
+站点公开部署在 **https://tech--man.github.io/deepseek-harness-learn/** ，仓库为 public。
+
+- 发布方式：`.github/workflows/deploy.yml`——每次 push 到 `main` 自动把 `learning-site/` 目录发布到 Pages（也可在 Actions 页手动触发 `workflow_dispatch`）。
+- 站点为 hash 路由 SPA，无需任何 URL 重写；`data.js` 等资产用相对路径引用，子路径部署天然兼容。
+- 因此标准提交流（重建 → 自检 → commit → push）的最后一步 push 即完成部署，无需额外操作。
+
 ## 边界与免责
 
 - 聚焦**架构与机制**（怎么设计的、为什么），不逐行穷举 UI 样式与测试用例；
