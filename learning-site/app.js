@@ -394,15 +394,63 @@
     route();
     document.getElementById("sidebar").classList.remove("open");
   });
-  /* ---------- 顶栏滚动玻璃态 ---------- */
+  /* ---------- 侧栏偏好：左右位置 / 手动收起（持久化） ---------- */
+  var SB_PREF_KEY = "dsh-learn-sidebar-pref";
+  var sbPref = { side: "left", collapsed: false };
+  try {
+    var _sb = JSON.parse(localStorage.getItem(SB_PREF_KEY) || "{}");
+    if (_sb.side === "left" || _sb.side === "right") sbPref.side = _sb.side;
+    if (typeof _sb.collapsed === "boolean") sbPref.collapsed = _sb.collapsed;
+  } catch (e) {}
+  var sbAutoHidden = false;
+  var shellEl = document.querySelector(".shell");
+
+  function isMobile() {
+    return window.matchMedia("(max-width: 900px)").matches;
+  }
+  function sbPersist() {
+    try { localStorage.setItem(SB_PREF_KEY, JSON.stringify(sbPref)); } catch (e) {}
+  }
+  function sbChevron() { // chevron 指向侧栏将出现的方向
+    var hidden = sbPref.collapsed || (sbAutoHidden && !isMobile());
+    return (sbPref.side === "left") === hidden ? "›" : "‹";
+  }
+  function sbPaint() {
+    shellEl.setAttribute("data-side", sbPref.side);
+    shellEl.classList.toggle("sb-collapsed",
+      !isMobile() && (sbPref.collapsed || sbAutoHidden));
+    var chev = sbChevron();
+    var t = document.getElementById("sideToggle");
+    if (t) { t.textContent = chev; t.title = sbPref.collapsed ? "展开侧栏" : "收起侧栏"; }
+    var tab = document.getElementById("sidebarTab");
+    if (tab) tab.textContent = chev;
+  }
+  function sbSetCollapsed(v) {
+    sbPref.collapsed = !!v; sbAutoHidden = false; sbPersist(); sbPaint();
+  }
+  function sbSetSide(s) { sbPref.side = s; sbPersist(); sbPaint(); paintTopbar(); }
+
+  /* ---------- 顶栏滚动玻璃态 + 侧栏自动收起 ---------- */
   var topbar = document.querySelector(".topbar");
+  var lastY = 0;
   function paintTopbar() {
     if (!topbar) return;
     topbar.classList.toggle("is-scrolled",
       (window.scrollY || document.documentElement.scrollTop || 0) > 8);
   }
-  window.addEventListener("scroll", paintTopbar, { passive: true });
-  paintTopbar();
+  function onScroll() {
+    paintTopbar();
+    var y = window.scrollY || 0;
+    if (!isMobile() && !sbPref.collapsed) {
+      var dy = y - lastY, next = sbAutoHidden;
+      if (y > 400 && dy > 2) next = true;        // 下滚 → 自动收起
+      else if (dy < -2 || y < 80) next = false;  // 上滚 / 回顶 → 恢复
+      if (next !== sbAutoHidden) { sbAutoHidden = next; sbPaint(); }
+    }
+    lastY = y;
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
 
   /* ---------- 侧栏拖宽（pointer capture，200–440px，持久化） ---------- */
   var SB_W_KEY = "dsh-learn-sidebar-w", W_MIN = 200, W_MAX = 440, W_DEFAULT = 264;
@@ -445,7 +493,9 @@
       e.preventDefault();
     });
     rz.addEventListener("pointermove", function (e) {
-      if (dragging) setSidebarW(startW + (e.clientX - startX), false);
+      if (!dragging) return;
+      var dir = sbPref.side === "right" ? -1 : 1; // 右侧模式：向左拖 = 变宽
+      setSidebarW(startW + dir * (e.clientX - startX), false);
     });
     rz.addEventListener("pointerup", endDrag);
     rz.addEventListener("pointercancel", endDrag);
@@ -456,6 +506,22 @@
       else if (e.key === "Escape") { setSidebarW(null, true); }
     });
   })();
+
+  /* ---------- 侧栏控件：收起切换 / 左右切换 / 边缘把手 ---------- */
+  var sideToggle = document.getElementById("sideToggle");
+  if (sideToggle) sideToggle.addEventListener("click", function () {
+    sbSetCollapsed(!sbPref.collapsed);
+  });
+  var sideBtn = document.getElementById("sideBtn");
+  if (sideBtn) sideBtn.addEventListener("click", function () {
+    sbSetSide(sbPref.side === "left" ? "right" : "left");
+  });
+  var sbTab = document.getElementById("sidebarTab");
+  if (sbTab) sbTab.addEventListener("click", function () {
+    if (sbPref.collapsed) sbSetCollapsed(false);
+    else { sbAutoHidden = false; sbPaint(); }
+  });
+  sbPaint();
 
   paintProgress();
   route();
