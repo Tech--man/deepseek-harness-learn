@@ -321,8 +321,11 @@
   var main = document.getElementById("main");
   function route() {
     var h = location.hash || "#/home";
-    var parts = h.slice(2).split("/");
+    var body = h.slice(2);
+    var hashParts = body.split("#");          // "path#m3" → ["path","m3"]
+    var parts = hashParts[0].split("/");      // "changelog/e-…" → ["changelog","e-…"]
     var id = parts.length > 1 && parts[0] === "kp" ? parts[1] : parts[0] === "" ? "__home" : parts[0];
+    var anchor = hashParts[1] || (id === "changelog" && parts[1] ? parts[1] : "");
     var html;
     if (id === "__home" || id === "home") { html = renderHome(); id = "__home"; }
     else if (id === "path") { html = renderPath(); id = "__path"; }
@@ -337,14 +340,15 @@
     buildSidebar(id);
     window.scrollTo(0, 0);
 
-    // 版本追踪页锚点（#/changelog/e-YYYY-MM-DD）
-    if (parts[0] === "changelog" && parts[1]) {
-      var target = document.getElementById(parts[1]);
+    // 锚点直达：path 步骤（#/path#m3）与版本记录（#/changelog/e-…）
+    if (anchor) {
+      var target = document.getElementById(anchor);
       if (target) {
+        var isEntry = target.classList.contains("cl-entry");
         setTimeout(function () {
           target.scrollIntoView({ behavior: "smooth", block: "start" });
-          target.classList.add("cl-flash");
-          setTimeout(function () { target.classList.remove("cl-flash"); }, 1600);
+          target.classList.add(isEntry ? "cl-flash" : "anchor-flash");
+          setTimeout(function () { target.classList.remove(isEntry ? "cl-flash" : "anchor-flash"); }, 1600);
         }, 60);
       }
     }
@@ -389,11 +393,6 @@
   window.addEventListener("hashchange", function () {
     route();
     document.getElementById("sidebar").classList.remove("open");
-    // 命中 path 锚点
-    if (location.hash.indexOf("#/path#") === 0) {
-      var t = document.getElementById(location.hash.split("#")[2]);
-      if (t) t.scrollIntoView();
-    }
   });
   /* ---------- 顶栏滚动玻璃态 ---------- */
   var topbar = document.querySelector(".topbar");
