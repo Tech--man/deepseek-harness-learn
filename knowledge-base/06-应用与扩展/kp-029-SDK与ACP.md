@@ -7,7 +7,7 @@ level: 进阶
 prerequisites: [kp-003, kp-016]
 related: [kp-003, kp-028, kp-030]
 tags: [sdk, json-rpc, python, acp]
-sources: [packages/sdk/{protocol,server,client}/README.md, python/sdk/api.py, python/sdk-runtime/README.md, packages/acp/acp/README.md]
+sources: [packages/sdk/{protocol,server,client}/README.md, python/sdk/api.py, python/sdk-runtime/README.md, packages/acp/acp/README.md, docs/user/guide/python-sdk.md]
 status: reviewed
 ---
 
@@ -50,6 +50,8 @@ console.log(result.finalResponse)
 **runtime wheel**（python/sdk-runtime）：`deepseek-harness-runtime-bin` 把正常 dsh CLI + 封闭 Node 依赖树打成 **单文件原生可执行** `deepseek-harness-sdk-runtime-<platform>-<arch>`（附 `-rg` sidecar、macOS `-spawn-helper`、`primary-runtime/` 内嵌 CPython/Node/pnpm、office-skills）；五平台 wheel-only（hatch_build.py 拒绝 sdist）；`deepseek-harness-runtime.json` 是模块元数据锚（`__init__.py:24`）；SDK 默认启动 `dsh --profile sdk`（`DSH_PRIMARY_RUNTIME` 未设时用 bundle carrier）。
 
 **ACP**（acp/acp）：stdio JSON-RPC，基于 `@agentclientprotocol/sdk`；表面：`initialize / authenticate / session/{new,list,resume,close,set_config_option,prompt,cancel}` + `session/update`（按会话串行）+ `session/request_permission`（一次性 allow/reject）；**故意不含** plan/todo/terminal/elicitation 等 DSH 专属展示；`dsh-subagent-acp` 用它做进程外子代理。
+
+**官方发布口径**（guide/python-sdk，2026-09-28 交叉验证）：对外安装即 `pip install deepseek-harness-sdk`——包内含**匹配的原生运行时 wheel 与 `dsh` 命令**，普通 SDK 运行**不需要系统 Node.js**。平台门槛：Python ≥3.10；Linux x64/arm64、macOS 14+（arm64）、Windows x64。官方最小示例 `python/sdk/examples/minimal.py` 以 `--workspace`（隔离工作区）+ `--dsh-home`（隔离 home）+ `--session-id` 三个显式参数运行——与"每次启动必须显式 DSH_HOME"的约束一致。
 
 ## 直观类比
 三套 SDK 像 **同一间餐厅的三种点餐方式**：TS SDK=店内点单机（双工、能看后厨每个事件）；Python SDK=电话订餐（同步、一句话等出餐，但电话那头是自带厨房车的总店 wheel）；ACP=外卖平台标准协议（只谈通用的下单/取消/配送，不谈本店特色）。

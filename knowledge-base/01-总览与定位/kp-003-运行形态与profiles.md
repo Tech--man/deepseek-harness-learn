@@ -7,7 +7,7 @@ level: 入门
 prerequisites: [kp-002]
 related: [kp-008, kp-027, kp-028, kp-029]
 tags: [profile, cli, 运行形态]
-sources: [README.md, docs/architecture.md, apps/cli/src/bin.ts, apps/cli/src/profile-boot.ts]
+sources: [README.md, docs/architecture.md, docs/user/guide/index.md, docs/user/guide/providers.md, docs/user/guide/network-proxy.md, apps/cli/src/bin.ts, apps/cli/src/profile-boot.ts]
 status: reviewed
 ---
 
@@ -53,6 +53,14 @@ bin.ts runCli()                         apps/cli/src/bin.ts:18-38
 - **行序无加载语义**——激活由服务可用性（inject 依赖）驱动（base patch 头注释）；
 - **`dsh <name>` 是 `--profile <name>` 的缩写**（args.ts:92）；其余 flag 不被 launcher 消费，而是作为 `cmdlineArgs` 交给应用层（profile-boot.ts 头注释）；
 - **Desktop 是三层特例**：Electron 壳内启动私有 Desktop Host（Node 模式），Host 再调用共享 CLI profile runner 与完整 Web 应用；默认端口 `19387`，桌面独占 `$DSH_HOME/profiles/desktop`（docs/architecture.md:48-56）。
+
+## 用户入门操作面（官方 guide 档，2026-09-28 交叉验证补入）
+
+从"使用者"视角（对应官方站 guide 档三页）走一遍 web profile 的最小闭环：
+
+- **配置模型**（guide/providers）：Web UI **设置 → 模型**输入 DeepSeek API 密钥即保存，模型路由**下一次请求立即生效、无需重启**。密钥是**只写**的——页面只收到脱敏描述符，明文存 `$DSH_HOME/.credentials.yaml`，settings 只留凭据引用。第三方 provider 直接选 dsh 自带 id（`anthropic`/`openai`/`moonshotai`/`zai`）；中转站走**自定义模型 API**：小写 Provider ID（**永久不可改**）+ baseURL + 协议三选一（`openai-completions` / `openai-responses` / `anthropic-messages`，与 kp-024 协议表一致）+ 模型目录探测。
+- **工作区**：Web UI 默认不选任何工作区，会话输入框在选中工作区前不可用；`dsh` 进程把启动目录作为默认文件系统位置。
+- **网络代理**（guide/network-proxy）：出站请求（模型调用/web 搜索/抓取/HTTP MCP）走标准 `HTTPS_PROXY`/`HTTP_PROXY` 环境变量，启动时读取；也可写 `$DSH_HOME/.env`。安全细节：**项目自己的 `.env` 不能设置代理变量**——DSH 宁可拒绝启动，也不让一个 clone 下来的仓库决定你的流量去向；代理 URL 含凭据时绝不回显。DSH 不读操作系统代理设置（macOS "系统代理"只对浏览器生效），TUN 模式除外。
 
 ## 直观类比
 profile 像航司的 **机型配置**：同一架飞机（内核+插件池），客舱布局（bundle 叠加）决定它是客运（web）、货运（headless）还是改装侦察机（acp）。

@@ -7,7 +7,7 @@ level: 核心
 prerequisites: [kp-005]
 related: [kp-007, kp-023]
 tags: [service, ctx, inject, 类型合并]
-sources: [vendor/cordis/src/service.ts, vendor/cordis/src/registry.ts, docs/cordis-tutorial/03-services.md, docs/glossary.md]
+sources: [vendor/cordis/src/service.ts, vendor/cordis/src/registry.ts, docs/cordis-tutorial/03-services.md, docs/user/develop/framework/service.md, docs/glossary.md]
 status: reviewed
 ---
 
@@ -51,6 +51,13 @@ kp-005（Context/插件树）。
 | `ctx.llm` | 模型适配接缝 | llm/llm |
 | `ctx.shell` / `ctx.fs` / `ctx.sandbox` / `ctx.subprocess` | 执行世界 | shell/fs/sandbox/subprocess |
 | `ctx.pluginManager` / `ctx.webhookRuntime` / `ctx.goals` … | 其余能力 | boot/webhook/goal |
+
+## 原理补充：可选依赖、消失重载与隔离（官方 develop/framework 档，2026-09-28 交叉验证）
+
+- **必需 vs 可选**：`inject: ['tools']` 是必需依赖——服务缺席时插件不加载；可选依赖则**省略 inject**，在使用点用 `ctx.get('metrics')?.record(...)` 查询（可空处理）。用哪个取决于"这个插件离开该服务还有没有意义"。
+- **服务消失的自动行为**：运行中某项必需服务消失（如提供方被卸载）→ 依赖它的插件**自动 dispose**；服务重新出现 → **自动重新加载**。这条防止插件调用已不存在的服务，也让"换 provider"（kp-023）在运行时是安全的。
+- **服务隔离**：`cordis.yml` 支持 `group: true` + `isolate: { shell: true }`——同一个服务可以有多个实例，不同插件组看到不同实例（两组各配一个 `timeoutMs` 不同的 `dsh-bash-local`，互不影响）。服务可见性是**树结构**层面的裁决，不是全局单例。
+- **插件三形态**：函数（`export function apply(ctx)`）、对象（`export default { name, inject, apply }`）、类（`export default class extends Service`）。官方建议：函数形式为默认，需要向其他插件提供服务时用类形式。
 
 ## 直观类比
 Service 像 **操作系统里的设备驱动**：`ctx.<key>` 是设备文件（/dev/xxx），inject 是"驱动加载完成"的 udev 事件——应用不必轮询设备是否就绪，就绪前你的程序根本不启动。

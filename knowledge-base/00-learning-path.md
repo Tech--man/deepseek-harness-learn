@@ -1,4 +1,4 @@
-# 学习路径：七段航线
+# 学习路径：七段航线 + 一段选修
 
 > 总时长约 10–14 小时。★ 为承重墙知识点，优先攻克；每段结束建议对照仓库自测。
 
@@ -33,6 +33,11 @@ Web UI 数据流（durable vs live 双通道）、Desktop 三层结构、TS/Pyth
 - 自检：解释 session/event 与 agent/* 两个事件域各自的消费者。
 
 ### 第 7 段：工程实践——把 60+ 插件包管起来的纪律
-验证脚本族与测试矩阵、AGENTS.md 工程约定、四本 cookbook（加包/加工具/加 adapter/加设置页）、常见误区与设计取舍总账。
-- 参考：kp:kp-032、kp:kp-033、kp:kp-034
+验证脚本族与测试矩阵、AGENTS.md 工程约定、四本 cookbook（加包/加工具/加 adapter/加设置页）、常见误区与设计取舍总账，以及官方 develop 档的打包安装模型（bundle/profile 双 manifest、四层加载顺序）。
+- 参考：kp:kp-032、kp:kp-033、kp:kp-034、kp:kp-035
 - 自检：说出给 dsh 添加一个 model-facing 工具的完整步骤。
+
+### 第 8 段（可选）：官方站交叉验证与上手面
+把本库与官方技术预览站三档对照走一遍：**guide 档**（使用 Web UI / 配置模型 / 网络代理 / Python SDK / 记忆 MCP）→ **develop 档**（第一个插件 → 打包安装 → adapter 实操，与 kp-006/007/008/035 互验）→ **reference 档**（architecture 与 subsystems，即本库 sources 一手来源）。适合作为总复习与"动手前最后一遍"。
+- 参考：kp:kp-003（用户入门操作面）、kp:kp-035、kp:kp-024；官方站 https://deepseek-harness.github.io/deepseek-harness/
+- 自检：用 `dsh plugin --profile demo add` 装一个本地组合包，并解释四层加载顺序里你的 patch 为什么赢。

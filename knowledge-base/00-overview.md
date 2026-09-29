@@ -49,4 +49,5 @@ Harness 要回答的五个骨架问题，也是本知识库的主线：
 
 ## 版本锚点
 - 源码快照：`origin/master @ 4878cdab`（2026-09-28，dsh 0.2.0-rc.1）
-- 官方文档：[deepseek-harness.github.io/deepseek-harness](https://deepseek-harness.github.io/deepseek-harness/)；仓库内 `docs/` 与本知识库互为补充（`docs/architecture.md` 是官方权威图）。
+- 官方文档：[deepseek-harness.github.io/deepseek-harness](https://deepseek-harness.github.io/deepseek-harness/)（技术预览站，VitePress；源在本仓库 `docs/` + `website/docs.ts` 清单）。三档结构：**guide**（用户操作：Web UI / 模型配置 / SDK / 集成）、**develop**（插件作者：第一个插件 → tool → 配置 → 打包 → 生命周期/服务/事件 → 三层拆分/adapter → Cordis 教程）、**reference**（architecture / capability-seams / agent-lifecycle / tool-execution-pipeline / api-gateway / subsystems）。仓库内 `docs/` 与本知识库互为补充（`docs/architecture.md` 是官方权威图）。
+- **2026-09-28 与官方技术预览站完成一轮交叉验证**：reference 档与对应 KP 抽查一致；develop 档（此前零覆盖）补入 kp-005/006/007/008/033 及新增 kp-035，guide 档补入 kp-003/026/029；官方中文定名对照见 99-术语表「官方术语对照」。

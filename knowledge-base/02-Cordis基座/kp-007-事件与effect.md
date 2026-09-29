@@ -49,7 +49,7 @@ ctx.on('llm/stream', (options, next) => {
 - 包装 `next()` 的返回值 = 中间件模式；直接 return = 拦截；
 - **返回值是权威结果**——下游监听器拿到的是上游包装后的值。
 
-**effect 回收**：`ctx.on` / `ctx.effect(fn => disposer)` 的返回物登记进当前 fiber；Context 卸载时按逆序执行。生成器形式可声明多步 setup/teardown：
+**effect 回收**：`ctx.on` / `ctx.effect(fn => disposer)` 的返回物登记进当前 fiber；Context 卸载时按逆序执行。**并发细节**（官方 develop/framework 档，2026-09-28 交叉验证）：多个异步处置器会**并发执行、不保证逐个完成**——存在顺序依赖的清理步骤必须放进**同一个** `ctx.effect()` 返回的处置器里，由该处置器自己串行等待。生成器形式可声明多步 setup/teardown：
 
 ```ts
 ctx.effect(function* () {

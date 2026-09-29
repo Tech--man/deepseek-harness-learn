@@ -7,7 +7,7 @@ level: 进阶
 prerequisites: [kp-003, kp-006]
 related: [kp-003, kp-005, kp-029]
 tags: [patch, bundle, hmr, 组合]
-sources: [apps/cli/README.md, apps/cli/src/profile-boot.ts, apps/cli/src/dump-config.ts, packages/boot/hmr/README.md, vendor/README.md]
+sources: [apps/cli/README.md, apps/cli/src/profile-boot.ts, apps/cli/src/dump-config.ts, packages/boot/hmr/README.md, docs/user/develop/basic/config.md, docs/user/develop/practice/dynamic-cordis.md, vendor/README.md]
 star: true
 status: reviewed
 ---
@@ -62,6 +62,13 @@ kp-003（启动链路）、kp-006（`!!js` 惰性求值）。
 - 限制：依赖 Node loader 内部实现（按 `getOrCreateModuleJob` 判型而非版本号，vendor README:51）；框架依赖变更需重启进程。
 
 **6. 准入与豁免**：组合边界检查 `peerDependencies` 对 `@deepseek-ai/dsh`/`dsh-*` 的版本范围；被拒 bundle 进 `skippedBundles`，硬要装可用 `dsh plugin allow-version … --accept-risk` 写入 `compatibility.json`。
+
+## 官方 develop 档补充（2026-09-28 交叉验证，来源 docs/user/develop/basic/*）
+
+- **插件怎么接受用户配置（Schemastery）**：插件导出 `Config` **类型**与**同名 schema**（`export const Config: Schema<Config> = Schema.object({...})`，默认值写在 schema 里）；`apply(ctx, config)` 收到的就是经 schema 校验、填好默认值的配置。**不要导出普通对象当 Config**——不满足 Cordis 要求的 Standard Schema 接口。schema 在插件加载时执行校验，非法配置 = 插件加载失败且错误信息明确。官方设计约定：**凡是不同部署可能取不同值的参数都必须是配置字段**——检验标准是"能否在 cordis.yml 里改这个值而不改代码"；约束写进 schema 让错误**响亮**，而不是在代码里 `?? default` 静默兜底。
+- **本地插件的上手路径**：`cordis.yml` 写 `- insert: [{id, name: '/绝对路径/my-plugin.ts'}]`，`pnpm dsh web --patch ./xxx/cordis.yml` 启动即挂载。细节：**插件行路径必须是绝对路径**——patch 文件只贡献配置，不改变 loader 解析模块路径时使用的 profile 目录。
+- **配置变更的热替换语义**：修改某插件的 `config` → 框架卸载旧实例、加载新实例；因为注册都登记为 effect 并自动清理（kp-007），替换后不残留旧注册。
+- **提示词驱动的持久化配置（创造模式）**：Plugin Manager（`packages/boot/plugin-manager`）+ 只读运行时检查（tool-cordis）让 agent 用自然语言改当前 profile 的插件组合——如"把该 MCP 服务器配置到当前 profile"：agent 编写纯配置组合包、patch 里插入 `@deepseek-ai/dsh-mcp-client`、经 `plugin_manager install_bundle` 安装。启用 HMR 时工具立即出现在同一会话；管理结果要核对 `application: applied`（返回 `restart-required` 的条目尚未激活）。插件配置属当前 profile，**进程重启后保留**。
 
 ## 直观类比
 层叠 patch 像 **CSS 层叠**：bundle 是框架预置样式，profile patch 是主题，home patch 是用户自定义样式表，`--patch` 是行内 style——特异性由层的位置决定；`--dump-config` 是 DevTools 的 computed styles；HMR 是热更新样式表不用刷新页面。

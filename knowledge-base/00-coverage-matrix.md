@@ -40,6 +40,15 @@
 | 工程实践 | 验证脚本、测试矩阵、CI、monorepo 约定 | ✅ | kp-032 |
 | | cookbook：加包/工具/adapter/设置页 | ✅ | kp-033 |
 | | 常见误区与设计取舍 | ✅ | kp-034 |
+| | 打包与安装：bundle/profile 双 manifest、四层加载顺序 | ✅ | kp-035 |
+
+## 维度二点五：官方技术预览站三档对照（2026-09-28 交叉验证）
+
+| 官方站档位 | 内容 | 本库落点 |
+|---|---|---|
+| **guide**（用户操作） | 使用 Web UI / 配置模型 / 网络代理 / Python SDK / GitHub 评审会话 / 会话提醒 / 记忆 MCP | kp-003「用户入门操作面」、kp-029、kp-026（记忆 MCP）；github-review / schedule 两页为功能运维向，仅留链接 |
+| **develop**（插件作者） | 第一个插件 / tool DSL / 插件配置 / 打包与安装 / 生命周期 / 服务 / 事件 / 三层拆分 / LLM adapter / dynamic-cordis | kp-035（新）、kp-005/006/007/008（补 fiber 状态机、可选依赖、处置器并发、Schemastery、服务隔离、提示词驱动配置）、kp-024（adapter 实操义务）、kp-033（入门阶梯互链） |
+| **reference**（架构参考） | architecture / capability-seams / agent-lifecycle / tool-execution-pipeline / api-gateway / cordis-primer / subsystems ×59 | 本库一手来源，抽查一致（kp-010/012/021/023 等）；官方中文定名见 99-术语表 |
 
 ## 维度二：按学习法要求
 

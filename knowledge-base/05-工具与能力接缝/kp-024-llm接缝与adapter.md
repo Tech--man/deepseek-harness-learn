@@ -7,7 +7,7 @@ level: 进阶
 prerequisites: [kp-013, kp-023]
 related: [kp-013, kp-019, kp-023]
 tags: [llm, adapter, streaming, wire extensions]
-sources: [packages/llm/llm/src/{types,message,index,call-config}.ts, packages/llm/llm-deepseek/src/{wire-types,serialize,translate}.ts, docs/deepseek-llm-api-wire-extensions.md]
+sources: [packages/llm/llm/src/{types,message,index,call-config}.ts, packages/llm/llm-deepseek/src/{wire-types,serialize,translate}.ts, docs/deepseek-llm-api-wire-extensions.md, docs/user/develop/practice/llm-adapter.md, docs/user/guide/providers.md]
 status: reviewed
 ---
 
@@ -53,6 +53,12 @@ kp-013（PreparedLlmCall）、kp-023（seam）。
 - reasoning 回写：历史里的 reasoning 块序列化为 `{type:'thinking', thinking, signature?}`；`purpose:'session-title'` 强制关思考（serialize.ts:146）。
 
 **第二 adapter**：`llm-pi-ai` 多 provider/OpenAI 兼容（协议表 openai-completions / openai-responses / anthropic-messages；`apiKeyEnv` 每请求经 `ctx.credentials` 解析——**密钥永不进配置**，assertUsableApiKey 只报 ref 位置）。
+
+**adapter 作者义务**（官方 develop/practice/llm-adapter 档，2026-09-28 交叉验证——实操视角补 cookbook 的协议版）：
+- **StreamChunk 协议逐型**：`block-start`（index 从 0 递增）→ `text-delta`/`tool-call-delta` → `block-end`（携带**完整块**）→ `usage` → `finish`（reason kind `stop` | `tool-calls`）。硬规则：每个 block-start 必有配对 block-end；**usage 必须在 finish 之前；finish 必须是最后一个分片**；`argumentsDelta` 是原始 JSON 文本增量（可一片发完也可多片）。
+- **`resolveModel(provider, model, signal?)`**：一次查询返回确切提供方/模型身份 + 可选 `context`/`reasoning` 元数据（有序**不透明 ID** + 展示名 + 可选配置默认值；保留 adapter 给出的权威可选列表，**包括上游能力 API 的 `off`，不得提升为核心枚举**）；异步查询必须响应 signal 使取消完全停稳。服务在调用 `stream()` 前校验并拒绝显式指定但不支持的推理强度；省略 `reasoning` = 该模型无可选推理强度。
+- **`listModels()`**：adapter 能公布模型选项时覆写，供选择器使用。
+- **每次提供方 HTTP 请求必须合并 `attributionHeaders()`** 并透传 `options.signal`；传输/协议故障抛**带稳定 code 的 `LlmError`**（如 `PROVIDER_HTTP_ERROR`），agent loop 保留 code 供诊断与策略——不要指望普通 `Error` 被自动转换。
 
 ## 直观类比
 词汇表像 **海运集装箱标准**：箱型（块）可扩展（新箱型大家投票加），但船舱布局（角色）封闭；adapter 是 **船公司**：登记航线（providers）后准时开船，能力单（model info）决定这班船能不能运冷藏箱（图片）；wire extensions 是 **随船报关单**（dsh_* 字段）——海关确认收货（2xx）才算签收。

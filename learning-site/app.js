@@ -180,7 +180,7 @@
 
   function renderPath() {
     var html = '<div class="kp-head"><h1>学习路径：从零读懂一个 Agent Harness</h1>' +
-      '<p class="lead" style="color:var(--ink-soft)">七段航线，总时长约 10–14 小时。每段先建立直觉，再进源码细节；带 ★ 的知识点是承重墙，优先攻克。</p></div>';
+      '<p class="lead" style="color:var(--ink-soft)">七段航线 + 一段选修（官方站交叉验证），总时长约 10–14 小时。每段先建立直觉，再进源码细节；带 ★ 的知识点是承重墙，优先攻克。</p></div>';
     DATA.pathSteps.forEach(function (s, i) {
       html += '<div class="path-step" id="m' + i + '"><div class="node">' + (i + 1) + "</div>" +
         '<div class="body"><h4>' + esc(s.title) + "</h4><p>" + esc(s.desc) + "</p>" +

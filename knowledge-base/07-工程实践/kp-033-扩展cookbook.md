@@ -5,7 +5,7 @@ domain: DeepSeek Harness
 module: 工程实践
 level: 核心
 prerequisites: [kp-021, kp-024, kp-032]
-related: [kp-021, kp-023, kp-024, kp-032]
+related: [kp-021, kp-023, kp-024, kp-032, kp-035]
 tags: [cookbook, 插件开发, 工具, adapter]
 sources: [docs/cookbook/extension-cookbook.md, docs/cookbook/adding-a-package.md, docs/cookbook/adding-a-tool.md, docs/cookbook/adding-an-llm-adapter.md, docs/cookbook/adding-a-settings-card.md]
 status: reviewed
@@ -83,3 +83,4 @@ ctx.tools.register(defineTool({
 
 ## 延伸阅读
 - `docs/cookbook/` 另有 5 篇：adding-a-remote-api / adding-a-session-format-version / adding-a-vendored-package / maintaining-dsh-code-review / responding-to-pr-review-on-a-stack
+- **官方技术预览站 develop 档**（入门阶梯，2026-09-28 交叉验证）：第一个插件 → tool DSL → 插件配置 → 打包与安装（kp-035）→ 生命周期/服务/事件（补进 kp-005/006/007/008）→ 三层拆分/adapter 实操；仓库内源在 `docs/user/develop/`。本页 cookbook 是"协议完备版"，该阶梯是"最小可跑版"——两者互补。
