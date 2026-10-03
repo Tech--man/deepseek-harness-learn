@@ -14,7 +14,7 @@ status: reviewed
 # Desktop：三层结构
 
 ## 一句话定义
-桌面版 = **Electron 壳**（apps/desktop）+ **Desktop Host**（Electron RunAsNode 子进程里的 profile runner，`runProfile({profile:'desktop'})`，默认端口 19387）+ **打包的 Web 应用**（`dsh-app://app/` 加载）；Node IPC 只承载 boot/readiness/shutdown 等低频信号，业务流量仍走 Web 的 RPC/WS。
+桌面版 = **Electron 壳**（apps/desktop）+ **Desktop Host**（Electron RunAsNode 子进程里的 profile runner，`runProfile({profile:'desktop'})`，端口默认 OS 分配）+ **打包的 Web 应用**（`dsh-app://app/` 加载）；Node IPC 只承载 boot/readiness/shutdown 等低频信号，业务流量仍走 Web 的 RPC/WS。
 
 ## 为什么重要
 它是"复用最大化的桌面化"范本：桌面端不是重写 UI，而是把 Web 应用整包搬进受控载体，再补上原生能力（目录选择、更新、快捷键）与专属 profile。
@@ -31,7 +31,7 @@ kp-003（profile）、kp-027（Web 数据流）。
 | Web 应用 | apps/web 打包产物 | 与线上 Web 完全相同的前端，`dsh-app://` 协议加载 |
 
 **关键事实**：
-- 端口默认 **19387**（`args: ['--no-open','--port','19387']`，desktop-host/src/index.ts:151）；`webserver.config.port` patch 可覆盖；
+- 端口默认 **OS 分配**（2026-09-30 `ecd9bf9273`：弃用固定 `--port 19387`——Windows Hyper-V/WinNAT 动态端口保留会致固定端口必然失联；Electron 从 Host ready 消息读实际端口）；`webserver.config.port` patch 可固定；
 - Electron 把应用 HTTP 请求转发给已认证 Host（丢弃 transfer-encoding/connection 头），bundle 响应标 `no-store`；WS 由 desktop carrier 认证（README:5）；
 - 渲染进程 `dshDesktopBoot.ready()` 返回 `{injections, streamBaseUrl}`，注入 script 并设 `globalThis.__DSH_TRANSPORT__ = {ownsHost:true, streamBaseUrl}`（main.ts:23-25）；
 - **profiles/desktop 独占**：CLI 不能 boot 或修改；Electron 与 `@deepseek-ai/dsh` 永远同版本（README:63-69）；打包标识 `desktop-runtime.json` 绑定 shell 版本/Node 版本/文件清单；
@@ -50,7 +50,7 @@ kp-003（profile）、kp-027（Web 数据流）。
 
 ## 常见误区
 - **以为桌面版有自己的 UI 代码库**：没有——就是打包的 Web 应用 + boot 注入；
-- **以为 19387 是 Web 端口改了个数字**：它是 desktop profile 的 webserver，被 Electron 壳转发使用，不对外开浏览；
+- **以为 Desktop 端口是写死的**：曾是 19387，现为 OS 分配（旧数字在部分 Windows 机器上会被系统保留范围吞掉，这正是改掉的原因）；它是 desktop profile 的 webserver，被 Electron 壳转发使用，不对外开浏览；
 - **以为 `dsh desktop` 能启动桌面版**：该名字被 CLI 保留拒绝（kp-003）。
 
 ## 自测题

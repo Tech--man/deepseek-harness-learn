@@ -60,6 +60,7 @@ kp-003（启动链路）、kp-006（`!!js` 惰性求值）。
 - 单一序列化队列：模块替换、Include 刷新、profile 配置变更排队执行；pnpm 安装在队列之外（hmr README:12）；
 - 事件：`hmr/change`（文件变更）、`hmr/reload`（替换完成，携带 `Map<Plugin, Reload>`）；
 - 限制：依赖 Node loader 内部实现（按 `getOrCreateModuleJob` 判型而非版本号，vendor README:51）；框架依赖变更需重启进程。
+- **manifest 失效与身份保持**（2026-10-01 修复波，PR #5583）：变更的 package manifest 触发失效（`6fe4a2e184`）；已加载 entry 的身份跨 manifest 变更保持（`b1c5f861b6`）；CommonJS 请求刷新**不驱逐模块**（`d7d2e5fd4e`）——热更从模块级精细到包清单级。
 
 **6. 准入与豁免**：组合边界检查 `peerDependencies` 对 `@deepseek-ai/dsh`/`dsh-*` 的版本范围；被拒 bundle 进 `skippedBundles`，硬要装可用 `dsh plugin allow-version … --accept-risk` 写入 `compatibility.json`。
 

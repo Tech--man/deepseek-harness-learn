@@ -52,7 +52,7 @@ bin.ts runCli()                         apps/cli/src/bin.ts:18-38
 要点：
 - **行序无加载语义**——激活由服务可用性（inject 依赖）驱动（base patch 头注释）；
 - **`dsh <name>` 是 `--profile <name>` 的缩写**（args.ts:92）；其余 flag 不被 launcher 消费，而是作为 `cmdlineArgs` 交给应用层（profile-boot.ts 头注释）；
-- **Desktop 是三层特例**：Electron 壳内启动私有 Desktop Host（Node 模式），Host 再调用共享 CLI profile runner 与完整 Web 应用；默认端口 `19387`，桌面独占 `$DSH_HOME/profiles/desktop`（docs/architecture.md:48-56）。
+- **Desktop 是三层特例**：Electron 壳内启动私有 Desktop Host（Node 模式），Host 再调用共享 CLI profile runner 与完整 Web 应用；桌面独占 `$DSH_HOME/profiles/desktop`（docs/architecture.md）；**端口自 2026-09-30 起默认由 OS 分配**（`ecd9bf9273`——固定 19387 会被 Windows Hyper-V/WinNAT 的动态端口范围保留吞掉，Electron 从 Host ready 消息读实际端口），profile 配置仍可固定。
 
 ## 用户入门操作面（官方 guide 档，2026-09-28 交叉验证补入）
 
