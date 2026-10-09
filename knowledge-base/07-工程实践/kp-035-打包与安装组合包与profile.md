@@ -69,6 +69,8 @@ profile manifest 从不需要手写：`dsh --profile <name> --from-default-profi
 
 **安装与验证**：`dsh plugin --profile demo add ./hello-plugin` 首次使用会初始化 profile（dsh-base 为第一个组合包）→ pnpm 链接 checkout → 因包声明了 `dsh.bundle` 而被追加进 `bundles`。先 `dsh --profile demo --dump-config` 验证（应出现 `# == dsh-hello-plugin` 层）再启动；`dsh plugin --profile demo remove dsh-hello-plugin` 同时移除依赖与对应的层。链接安装的 checkout 保留自己的 `node_modules`；需与宿主共享实例的 dsh 包按 kp-033 约定同时声明 `peerDependencies` 与 `devDependencies`。
 
+**官方组合包按需安装**（2026-10-08 波）：Plugins 页可把官方 bundle 作为**按需安装项**提供（`8ed0b530ed`），安装可从**运行中的 checkout** 取源（`f57c88f792`/`332a223d20`）；`scripts/` 提供**本机回环 registry** 服务本地构建的 Official bundle（`73d853a9ae`）——"官方组合"从全部预装转向"按需拉取"，profile 的 bundles 列表相应变短。 managed native bundle 安装时保留 Web/Desktop 身份（`8b5527b8da`）。
+
 **表层组合包持有自己的命令行**：定义了可运行应用的组合包挂载一个普通提供方插件——`inject = ['cmdlineArgs']`，用 commander program 调 `@deepseek-ai/dsh-cmdline` 的 `parseCmdline`，在 program 自己的 action 里把应用自有服务提供出去。启动器把**自身 flag 之后的同一份不可变参数快照**交给每个插件，所以加应用专属 flag 无需改启动器，多个插件也可解析该快照。受这些参数配置的行在自己的 `!!js` 选项里读取服务、旁边写部署回退值（`port: !!js ctx.myAppStartup.port ?? 8080`）；遇到 `--help` 时提供方不发布服务，这些行不激活。
 
 ## 直观类比
