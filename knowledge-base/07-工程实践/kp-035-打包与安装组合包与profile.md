@@ -49,6 +49,8 @@ hello-plugin/
 - `package.json`：树外插件依赖（pnpm 管理）+ `dsh.profile.bundles` 有序组合包列表；
 - `cordis.patch.yml`：用户自己的 patch 层，在所有组合包层之后应用。
 
+**profile 替换语义**（2026-10-14，`8843c37e37`）：`--from-default-profile` 现在**替换既有的同名自定义 profile**（而非报错跳过）；替换过程对大小写别名与 Windows 重命名错误加固（`6bf5668e79`）。
+
 profile manifest 从不需要手写：`dsh --profile <name> --from-default-profile <template>` 从随附应用模板创建；`dsh plugin` 则创建 base 起步的 profile 并维护 bundles 列表。
 
 ## 原理 / 机制：四层加载顺序与"整行胜出"

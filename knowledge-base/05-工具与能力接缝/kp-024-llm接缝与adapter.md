@@ -60,6 +60,8 @@ kp-013（PreparedLlmCall）、kp-023（seam）。
 - **`listModels()`**：adapter 能公布模型选项时覆写，供选择器使用。
 - **每次提供方 HTTP 请求必须合并 `attributionHeaders()`** 并透传 `options.signal`；传输/协议故障抛**带稳定 code 的 `LlmError`**（如 `PROVIDER_HTTP_ERROR`），agent loop 保留 code 供诊断与策略——不要指望普通 `Error` 被自动转换。
 
+**协议历史与凭据**（2026-10-14 波）：pi-ai 保留原始协议历史并验证**跨协议无损往返**（`30aa47281d`，修复响应转换空文本与旧会话重放失败 `c368939151`）；headless 形态**优先已存凭据、环境变量键作后备**（`5249d9a4ce`，此前 headless 只认环境键）。
+
 ## 直观类比
 词汇表像 **海运集装箱标准**：箱型（块）可扩展（新箱型大家投票加），但船舱布局（角色）封闭；adapter 是 **船公司**：登记航线（providers）后准时开船，能力单（model info）决定这班船能不能运冷藏箱（图片）；wire extensions 是 **随船报关单**（dsh_* 字段）——海关确认收货（2xx）才算签收。
 

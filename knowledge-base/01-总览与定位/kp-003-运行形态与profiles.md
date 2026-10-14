@@ -60,6 +60,7 @@ bin.ts runCli()                         apps/cli/src/bin.ts:18-38
 
 - **配置模型**（guide/providers）：Web UI **设置 → 模型**输入 DeepSeek API 密钥即保存，模型路由**下一次请求立即生效、无需重启**。密钥是**只写**的——页面只收到脱敏描述符，明文存 `$DSH_HOME/.credentials.yaml`，settings 只留凭据引用。第三方 provider 直接选 dsh 自带 id（`anthropic`/`openai`/`moonshotai`/`zai`）；中转站走**自定义模型 API**：小写 Provider ID（**永久不可改**）+ baseURL + 协议三选一（`openai-completions` / `openai-responses` / `anthropic-messages`，与 kp-024 协议表一致）+ 模型目录探测。
 - **工作区**：Web UI 默认不选任何工作区，会话输入框在选中工作区前不可用；`dsh` 进程把启动目录作为默认文件系统位置。
+- **反代公开部署**（guide/public-deployments，2026-10-14 新页）：`dsh --profile web` 只听回环端口，跨机访问由反向代理负责外部腿——TLS、路径前缀剥离；`--public-url https://app.example/ui/` 告诉 dsh 浏览器实际使用的地址，`--trusted-host app.example` 声明信任主机。
 - **网络代理**（guide/network-proxy）：出站请求（模型调用/web 搜索/抓取/HTTP MCP）走标准 `HTTPS_PROXY`/`HTTP_PROXY` 环境变量，启动时读取；也可写 `$DSH_HOME/.env`。安全细节：**项目自己的 `.env` 不能设置代理变量**——DSH 宁可拒绝启动，也不让一个 clone 下来的仓库决定你的流量去向；代理 URL 含凭据时绝不回显。DSH 不读操作系统代理设置（macOS "系统代理"只对浏览器生效），TUN 模式除外。
 
 ## 直观类比

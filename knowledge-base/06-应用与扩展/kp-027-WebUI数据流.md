@@ -44,6 +44,8 @@ kp-016、kp-018（投影/snapshot）。
 
 **主题**（ui-theme/README.md）：light/dark/system + 内容字号 12–17px，存 `ui-theme` settings namespace（loopback 持久化到 profile patch）；全部颜色走 `--dsw-*` CSS token；第三方皮肤经 `ctx.theme` 注册 alias-token override 按序 fold。
 
+**Remote access RBAC**（2026-10-14，packages/api/* 控制器家族）：Web/SDK 通道长出方法级多用户权限层——业务包定义角色（一个资源类上的动作集），每个非 owner 主体类型注册一条策略；**API Gateway 在解码参数前**先经 `remote-access` 决定该 Peer 可调哪些 Remote 方法、可收哪些转发事件，列表经 `allows()` 过滤，每个 Peer 持自己的访问快照（Client 可据此隐藏 Host 会拒的条目）；吊销时丢弃缓冲事件。配套：caller principals 随 Peer 显式携带（`f6316536ea`）、typert 统一 Remote 方法定义与惰性方法信息（`efdaa86fb8`）。
+
 ## 直观类比
 像 **新闻网站的双轨制**：已刊文章（durable events）从 CMS（session log）分页拉取、可检索可回看；直播间弹幕（live chunk）走推送通道、过了就过；版面编辑（ConversationNodeAssembler）把两路素材按模板（Definition）排进不同版面（Chat/Trajectory）。
 
