@@ -75,6 +75,8 @@ profile manifest 从不需要手写：`dsh --profile <name> --from-default-profi
 
 **表层组合包持有自己的命令行**：定义了可运行应用的组合包挂载一个普通提供方插件——`inject = ['cmdlineArgs']`，用 commander program 调 `@deepseek-ai/dsh-cmdline` 的 `parseCmdline`，在 program 自己的 action 里把应用自有服务提供出去。启动器把**自身 flag 之后的同一份不可变参数快照**交给每个插件，所以加应用专属 flag 无需改启动器，多个插件也可解析该快照。受这些参数配置的行在自己的 `!!js` 选项里读取服务、旁边写部署回退值（`port: !!js ctx.myAppStartup.port ?? 8080`）；遇到 `--help` 时提供方不发布服务，这些行不激活。
 
+**插件市场**（2026-10-16，guide/plugin-market）：市场 = 一份 JSON 索引文件（列出可装 bundle 的标题/图标/作者/版本）+ 静态托管；实验性 **Custom plugin markets** bundle 开启后 Plugins 页出现 **Discover** 标签，确认后按版本安装；条目携带源仓库，`plugin-market-generator` 参考实现可生成索引。分发通道从此有三条：npm 发布 / tarball / **市场索引**（多一个"确认后安装"的用户决策点）。
+
 ## 直观类比
 bundle 与 profile 像 **乐高盒子与图纸**：盒子（bundle）只声明"我提供哪块板子 + 板子上的图案（patch）"，图纸（profile）声明"按什么顺序把哪些盒子拼进来、最后再贴哪几张自己的贴纸（用户层）"。加载顺序是**图纸从下往上贴**：基础盒 → 你买的盒子 → 机器层 → 命令行贴纸；每张贴纸**整张覆盖**同一位置的旧图案，不是叠透明片。
 
