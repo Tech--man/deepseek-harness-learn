@@ -2,7 +2,7 @@
 
 > 一套逐知识点拆解 **DeepSeek Harness（`dsh`）** 源码的完整学习包：**35 个知识点**的 Markdown 知识库 + 零依赖纯静态学习站点 + 每日上游跟踪自动化。
 >
-> 基于 `deepseek-ai/deepseek-harness` @ `origin/master 687f282e`（2026-10-17，dsh 0.2.1-rc.2），本机源码：`~/Developer/projects/web-frontend/deepseek-harness`。
+> 基于 `deepseek-ai/deepseek-harness` @ `origin/master 22ddee37`（2026-10-23，dsh 0.2.1-rc.3），本机源码：`~/Developer/projects/web-frontend/deepseek-harness`。
 
 ## 这是什么
 
