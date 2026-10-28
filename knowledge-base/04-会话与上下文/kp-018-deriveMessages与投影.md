@@ -36,7 +36,7 @@ kp-016（surface）。
 - 注册单位 = 纯 fold：`{key, stateSchema, init, apply, stateVersion, wire}`；
 - host 消费者激活期必须显式 require 该服务，缺失则显式失败（强制接缝，不做静默默认）；
 - `stateOf(key)` 读类型化状态；`snapshot(key…)` 批量生成 **裁剪过的客户端视图**（cropped views）——kp-027 的 Web 数据流以此为基础；
-- agent-loop 自带两个：`turnBoundary`（turn 号）与 `inbox`（带 splice 坐标校验）。**生命周期改版**（2026-10-22，rc.3）：领域服务改为**激活期 await 注册、保留私有句柄**对外暴露业务方法；注销注册即退出全局参与，但保留的句柄**继续折叠** Session 事件（不再全局失效）；`AgentRegistry` 拥有 turn/step 状态并暴露 `turnBoundaryOf(session)`，`AgentLoop` 拥有 `modelSelection` 投影（agent-loop README:93）。
+- agent-loop 自带两个：`turnBoundary`（turn 号）与 `inbox`（带 splice 坐标校验）。**生命周期改版**（2026-10-22，rc.3）：领域服务改为**激活期 await 注册、保留私有句柄**对外暴露业务方法；注销注册即退出全局参与，但保留的句柄**继续折叠** Session 事件（不再全局失效）；`AgentRegistry` 拥有 turn/step 状态并暴露 `turnBoundaryOf(session)`，`AgentLoop` 拥有 `modelSelection` 与 inbox 状态投影（agent-loop README:93）；runtime 投影读取统一**绑定到单一 session**（`fcca540841`，projection handle 暴露 session-bound readers）。
 
 ## 原理 / 机制：一次请求历史的诞生
 
