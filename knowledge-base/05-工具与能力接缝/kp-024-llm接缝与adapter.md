@@ -58,6 +58,7 @@ kp-013（PreparedLlmCall）、kp-023（seam）。
 - **StreamChunk 协议逐型**：`block-start`（index 从 0 递增）→ `text-delta`/`tool-call-delta` → `block-end`（携带**完整块**）→ `usage` → `finish`（reason kind `stop` | `tool-calls`）。硬规则：每个 block-start 必有配对 block-end；**usage 必须在 finish 之前；finish 必须是最后一个分片**；`argumentsDelta` 是原始 JSON 文本增量（可一片发完也可多片）。
 - **`resolveModel(provider, model, signal?)`**：一次查询返回确切提供方/模型身份 + 可选 `context`/`reasoning` 元数据（有序**不透明 ID** + 展示名 + 可选配置默认值；保留 adapter 给出的权威可选列表，**包括上游能力 API 的 `off`，不得提升为核心枚举**）；异步查询必须响应 signal 使取消完全停稳。服务在调用 `stream()` 前校验并拒绝显式指定但不支持的推理强度；省略 `reasoning` = 该模型无可选推理强度。
 - **`listModels()`**：adapter 能公布模型选项时覆写，供选择器使用。
+- **pi-ai 请求头扩展点**（2026-10-30）：插件可准备 pi-ai 请求头（`a05a0d02fa`），header 覆盖得以保留、失败诊断安全化（`d54475a681`）——与 attributionHeaders 叠加而非替代。
 - **每次提供方 HTTP 请求必须合并 `attributionHeaders()`** 并透传 `options.signal`；传输/协议故障抛**带稳定 code 的 `LlmError`**（如 `PROVIDER_HTTP_ERROR`），agent loop 保留 code 供诊断与策略——不要指望普通 `Error` 被自动转换。
 
 **协议历史与凭据**（2026-10-14 波）：pi-ai 保留原始协议历史并验证**跨协议无损往返**（`30aa47281d`，修复响应转换空文本与旧会话重放失败 `c368939151`）；headless 形态**优先已存凭据、环境变量键作后备**（`5249d9a4ce`，此前 headless 只认环境键）。
